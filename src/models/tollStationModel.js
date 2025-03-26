@@ -1,4 +1,3 @@
-import e from 'express'
 import Joi from 'joi'
 import { ObjectId, ReturnDocument } from 'mongodb'
 import { GET_DB } from '~/config/mongodb'
@@ -69,11 +68,24 @@ const update = async (tollStationId, reqBody) => {
     throw new Error(error)
   }
 }
+
+const deleteOneById = async (tollStationId) => {
+  try {
+    const result = await GET_DB().collection(TOLL_STATION_COLLECTION_NAME).deleteOne(
+      { _id : new ObjectId(tollStationId) }
+    )
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export const tollStationModel = {
   TOLL_STATION_COLLECTION_NAME,
   TOLL_STATION_COLLECTION_SCHEMA,
   createNew,
   findOneById,
   getDetail,
-  update
+  update,
+  deleteOneById
 }

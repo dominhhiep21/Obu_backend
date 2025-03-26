@@ -61,9 +61,20 @@ const update = async (tollStationId, reqBody) => {
   }
 }
 
+const deleteStation = async (tollStationId) => {
+  try {
+    await tollStationModel.deleteOneById(tollStationId)
+
+    return { deleteResult : 'This toll station was deleted successfully' }
+  } catch (error) {
+    throw error
+  }
+}
+
 export const tollStationService = {
   createNew,
   getDetail,
   getDetailId,
-  update
+  update,
+  deleteStation
 }

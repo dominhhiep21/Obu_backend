@@ -1,15 +1,11 @@
 import Joi from 'joi'
 import { StatusCodes } from 'http-status-codes'
 import ApiError from '~/utils/apiErrors'
-import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators'
 
 const createNew = async (req, res, next) => {
 
   const validateFormat = Joi.object({
-    station_name: Joi.string().required().trim().strict(),
-    lat: Joi.number().min(-90).max(90).required(),
-    lng: Joi.number().min(-180).max(180).required(),
-    fee: Joi.number().min(0).required()
+    device_id: Joi.string().required().trim().strict()
   })
 
   try {
@@ -24,10 +20,7 @@ const createNew = async (req, res, next) => {
 const update = async (req, res, next) => {
 
   const validateFormat = Joi.object({
-    station_name: Joi.string().trim().strict(),
-    lat: Joi.number().min(-90).max(90),
-    lng: Joi.number().min(-180).max(180),
-    fee: Joi.number().min(0)
+    device_id: Joi.string().trim().strict()
   })
 
   try {
@@ -41,10 +34,10 @@ const update = async (req, res, next) => {
   }
 }
 
-const deleteStation = async (req, res, next) => {
+const deleteDevice = async (req, res, next) => {
 
   const validateFormat = Joi.object({
-    id: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
+    device_id: Joi.string().required().trim().strict()
   })
 
   try {
@@ -55,8 +48,8 @@ const deleteStation = async (req, res, next) => {
     next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message))
   }
 }
-export const tollStationValidation = {
+export const deviceValidation = {
   createNew,
   update,
-  deleteStation
+  deleteDevice
 }

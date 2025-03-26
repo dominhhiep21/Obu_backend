@@ -35,7 +35,7 @@ const initMQTT = () => {
       )
 
       let route_name = await getStreetName(lat, lng)
-      //console.log(routeName)
+      
       const data = { device_id, lat, lng, route_name }
 
       await gpsValidation.createNew(data)

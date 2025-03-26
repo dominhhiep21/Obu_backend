@@ -62,5 +62,6 @@ export const tollStationController = {
   createNew,
   getDetail,
   getDetailId,
-  update
+  update,
+  deleteStation
 }
