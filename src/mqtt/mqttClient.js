@@ -3,6 +3,7 @@ import { gpsValidation } from '~/validations/gpsValidation.js'
 import { gpsModel } from '~/models/gpsModel.js'
 import { env } from '~/config/environment'
 import { getStreetName } from '~/utils/getRouteName'
+import { tollHistoryModel } from '~/models/tollHistoryModel'
 
 const MQTT_BROKER_URL = env.MQTT_BROKER
 const TOPIC = env.MQTT_TOPIC
@@ -40,7 +41,7 @@ const initMQTT = () => {
 
       await gpsValidation.createNew(data)
       await gpsModel.createNew(data)
-
+      await tollHistoryModel.updateTollFee(device_id, lat, lng)
     } catch (error) {
       console.error('Error processing MQTT message:', error)
     }

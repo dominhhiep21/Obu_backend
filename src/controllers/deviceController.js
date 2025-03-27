@@ -38,7 +38,7 @@ const getDetailId = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   try {
-    const deviceId = req.params.id
+    const deviceId = req.params.device_id
     const device = await deviceService.update(deviceId, req.body)
 
     res.status(StatusCodes.OK).json({ device })

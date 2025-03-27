@@ -2,8 +2,9 @@ import Joi from 'joi'
 import { ObjectId } from 'mongodb'
 import { GET_DB } from '~/config/mongodb'
 import { gpsModel } from './gpsModel'
-
+import { tollHistoryModel } from './tollHistoryModel'
 const DEVICE_COLLECTION_NAME = 'devices'
+
 const DEVICE_COLLECTION_SCHEMA = Joi.object({
   device_id: Joi.string().required().trim().strict(),
   createdAt: Joi.date().timestamp('javascript').default(Date.now),
@@ -25,6 +26,13 @@ const createNew = async (data) => {
     )
     if (!result) {
       const createdDevice = await GET_DB().collection(DEVICE_COLLECTION_NAME).insertOne(validData)
+
+      const tollHistoryData = {
+        device_id: validData.device_id
+      }
+
+      const validTollHistory = await tollHistoryModel.TOLL_HISTORY_COLLECTION_SCHEMA.validateAsync(tollHistoryData, { abortEarly: false })
+      await GET_DB().collection(tollHistoryModel.TOLL_HISTORY_COLLECTION_NAME).insertOne(validTollHistory)
       return createdDevice
     }
     return null
@@ -109,8 +117,14 @@ const update = async (deviceId, reqBody) => {
     const result = await GET_DB().collection(DEVICE_COLLECTION_NAME).findOneAndUpdate(
       { device_id: deviceId },
       { $set: reqBody },
-      { ReturnDocument: 'after' }
+      { returnDocument: 'after' }
     )
+
+    await GET_DB().collection(gpsModel.GPS_COLLECTION_NAME).updateMany(
+      { device_id: deviceId },
+      { $set: reqBody }
+    )
+
     return result
   } catch (error) {
     throw new Error(error)
@@ -120,6 +134,9 @@ const update = async (deviceId, reqBody) => {
 const deleteOneById = async (deviceId) => {
   try {
     const result = await GET_DB().collection(DEVICE_COLLECTION_NAME).deleteOne(
+      { device_id: deviceId }
+    )
+    await GET_DB().collection(tollHistoryModel.TOLL_HISTORY_COLLECTION_NAME).deleteOne(
       { device_id: deviceId }
     )
     return result
