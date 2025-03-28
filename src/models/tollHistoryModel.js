@@ -80,16 +80,15 @@ const findOneById = async (id) => {
 const updateTollFee = async (device_id, lat, lng) => {
   try {
     const db = GET_DB()
-
     const tollStations = await db.collection(tollStationModel.TOLL_STATION_COLLECTION_NAME).find().toArray()
 
     let nearestStation = null
     let minDistance = Infinity
+    const now = Date.now()
 
     tollStations.forEach(station => {
       const distance = haversineDistance(lat, lng, station.lat, station.lng)
-
-      if (distance < 300 && distance < minDistance) {
+      if (distance < 100 && distance < minDistance) {
         nearestStation = station
         minDistance = distance
       }
@@ -100,6 +99,7 @@ const updateTollFee = async (device_id, lat, lng) => {
     let tollHistory = await db.collection(TOLL_HISTORY_COLLECTION_NAME).findOne({ device_id })
 
     if (!tollHistory) {
+      // Nếu chưa có lịch sử thu phí, tạo mới
       const newHistory = {
         device_id,
         total_fee: nearestStation.fee,
@@ -109,9 +109,9 @@ const updateTollFee = async (device_id, lat, lng) => {
           lat: nearestStation.lat,
           lng: nearestStation.lng,
           fee: nearestStation.fee,
-          createdAt: Date.now()
+          lastChargedAt: now
         }],
-        createdAt: Date.now(),
+        createdAt: now,
         _destroy: false
       }
 
@@ -119,20 +119,42 @@ const updateTollFee = async (device_id, lat, lng) => {
       return newHistory
     }
 
-    const alreadyPassed = tollHistory.toll_stations.some(station => station.station_name === nearestStation.station_name)
-    if (alreadyPassed) return null
+    // Kiểm tra xem đã qua trạm này chưa
+    const existingStationIndex = tollHistory.toll_stations.findIndex(station => station._id.toString() === nearestStation._id.toString())
 
+    if (existingStationIndex !== -1) {
+      // Nếu đã qua trạm này, cập nhật lastChargedAt và tăng tiền
+      const lastChargedTime = tollHistory.toll_stations[existingStationIndex].lastChargedAt
+      const timeElapsed = now - lastChargedTime
+
+      if (timeElapsed < 5 * 60 * 1000) {
+        return null// Tránh thu phí nhiều lần trong 5 phút
+      }
+
+      const result = await db.collection(TOLL_HISTORY_COLLECTION_NAME).findOneAndUpdate(
+        { device_id, 'toll_stations._id': new ObjectId(nearestStation._id) },
+        {
+          $set: { 'toll_stations.$.lastChargedAt': now },
+          $inc: { total_fee: nearestStation.fee }
+        },
+        { returnDocument: 'after' }
+      )
+
+      return result
+    }
+
+    // Nếu trạm mới, thêm vào danh sách
     const result = await db.collection(TOLL_HISTORY_COLLECTION_NAME).findOneAndUpdate(
       { device_id },
       {
         $push: {
           toll_stations: {
-            _id: nearestStation._id,
+            _id: new ObjectId(nearestStation._id),
             station_name: nearestStation.station_name,
             lat: nearestStation.lat,
             lng: nearestStation.lng,
             fee: nearestStation.fee,
-            createdAt: Date.now()
+            lastChargedAt: now
           }
         },
         $inc: { total_fee: nearestStation.fee }
@@ -145,6 +167,7 @@ const updateTollFee = async (device_id, lat, lng) => {
     throw new Error(error)
   }
 }
+
 
 const deleteOneById = async (tollStationId) => {
   try {

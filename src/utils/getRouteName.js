@@ -16,7 +16,7 @@ export const getStreetName = async (lat, lng) => {
     return roadName
   } catch (error) {
     console.error('Error fetching street name:', error)
-    return 'Error fetching road name'
+    return 'Unnamed Road'
   }
 }
 
