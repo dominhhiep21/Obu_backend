@@ -27,7 +27,7 @@ import { tollHistoryService } from '~/services/tollHistoryService'
 
 const getDetailId = async (req, res, next) => {
   try {
-    const tollStationId = req.params.id
+    const tollStationId = req.params.device_id
     const tollHistory = await tollHistoryService.getDetailId(tollStationId)
 
     res.status(StatusCodes.OK).json({ tollHistory })
@@ -49,7 +49,7 @@ const getDetailId = async (req, res, next) => {
 
 const deleteHistory = async (req, res, next) => {
   try {
-    const tollStationId = req.params.id
+    const tollStationId = req.params.device_id
     const tollHistory = await tollHistoryService.deleteHistory(tollStationId)
 
     res.status(StatusCodes.OK).json({ tollHistory })

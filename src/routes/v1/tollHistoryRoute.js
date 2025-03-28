@@ -16,7 +16,7 @@ Router.route('/')
 // Router.route('/all')
 //   .get(tollHistoryController.getDetail)
 
-Router.route('/:id')
+Router.route('/:device_id')
   .get(tollHistoryController.getDetailId)
   //.put(tollHistoryValidation.update, tollHistoryController.update)
   .delete(tollHistoryValidation.deleteHistory, tollHistoryController.deleteHistory)

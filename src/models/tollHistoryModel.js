@@ -3,6 +3,7 @@ import Joi from 'joi'
 import { haversineDistance } from '~/utils/haversineDistance'
 import { GET_DB } from '~/config/mongodb'
 import { tollStationModel } from './tollStationModel'
+import { ObjectId } from 'mongodb'
 const TOLL_HISTORY_COLLECTION_NAME = 'toll_history'
 
 const TOLL_HISTORY_COLLECTION_SCHEMA = Joi.object({
@@ -80,13 +81,11 @@ const updateTollFee = async (device_id, lat, lng) => {
   try {
     const db = GET_DB()
 
-    // Lấy danh sách tất cả các trạm thu phí
     const tollStations = await db.collection(tollStationModel.TOLL_STATION_COLLECTION_NAME).find().toArray()
 
     let nearestStation = null
     let minDistance = Infinity
 
-    // Tìm trạm thu phí gần nhất (cách dưới 100m)
     tollStations.forEach(station => {
       const distance = haversineDistance(lat, lng, station.lat, station.lng)
 
@@ -105,10 +104,12 @@ const updateTollFee = async (device_id, lat, lng) => {
         device_id,
         total_fee: nearestStation.fee,
         toll_stations: [{
+          _id: new ObjectId(nearestStation._id),
           station_name: nearestStation.station_name,
           lat: nearestStation.lat,
           lng: nearestStation.lng,
-          fee: nearestStation.fee
+          fee: nearestStation.fee,
+          createdAt: Date.now()
         }],
         createdAt: Date.now(),
         _destroy: false
@@ -118,20 +119,20 @@ const updateTollFee = async (device_id, lat, lng) => {
       return newHistory
     }
 
-    // Kiểm tra nếu đã qua trạm này rồi
     const alreadyPassed = tollHistory.toll_stations.some(station => station.station_name === nearestStation.station_name)
     if (alreadyPassed) return null
 
-    // Cập nhật total_fee và danh sách toll_stations
     const result = await db.collection(TOLL_HISTORY_COLLECTION_NAME).findOneAndUpdate(
       { device_id },
       {
         $push: {
           toll_stations: {
+            _id: nearestStation._id,
             station_name: nearestStation.station_name,
             lat: nearestStation.lat,
             lng: nearestStation.lng,
-            fee: nearestStation.fee
+            fee: nearestStation.fee,
+            createdAt: Date.now()
           }
         },
         $inc: { total_fee: nearestStation.fee }
