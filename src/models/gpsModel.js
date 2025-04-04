@@ -37,7 +37,7 @@ const getDetail = async () => {
 
 const getDetailId = async (device_id) => {
   try {
-    const result = await GET_DB().collection(GPS_COLLECTION_NAME).find({device_id}).project({ _destroy: 0 }).sort({ 'createdAt':-1 }).limit(10).toArray()
+    const result = await GET_DB().collection(GPS_COLLECTION_NAME).find({ device_id }).project({ _destroy: 0 }).sort({ 'createdAt':-1 }).limit(10).toArray()
     return result
   } catch (error) {
     throw new Error(error)

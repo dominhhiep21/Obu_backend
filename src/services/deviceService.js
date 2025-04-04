@@ -32,9 +32,9 @@ const getDetail = async () => {
   }
 }
 
-const getDetailId = async (deviceId) => {
+const getDetailId = async (query) => {
   try {
-    const device = await deviceModel.findOneByDeviceId(deviceId)
+    const device = await deviceModel.findOneByDeviceId(query)
 
     if (!device) {
       throw new ApiError(StatusCodes.NOT_FOUND, 'Device detail not found')
@@ -45,6 +45,7 @@ const getDetailId = async (deviceId) => {
     throw error
   }
 }
+
 
 const update = async (deviceId, reqBody) => {
   try {

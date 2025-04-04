@@ -36,16 +36,16 @@ const getDetailId = async (req, res, next) => {
   }
 }
 
-// const update = async (req, res, next) => {
-//   try {
-//     const tollStationId = req.params.id
-//     const tollStation = await tollStationService.update(tollStationId, req.body)
+const update = async (req, res, next) => {
+  try {
+    const tollStationId = req.params.device_id
+    const tollStation = await tollHistoryService.update(tollStationId)
 
-//     res.status(StatusCodes.OK).json({ tollStation })
-//   } catch (error) {
-//     next(error)
-//   }
-// }
+    res.status(StatusCodes.OK).json({ tollStation })
+  } catch (error) {
+    next(error)
+  }
+}
 
 const deleteHistory = async (req, res, next) => {
   try {
@@ -62,6 +62,6 @@ export const tollHistoryController = {
   //createNew,
   //getDetail,
   getDetailId,
-  //update,
+  update,
   deleteHistory
 }

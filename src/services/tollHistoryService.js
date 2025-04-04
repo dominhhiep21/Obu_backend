@@ -47,19 +47,20 @@ const getDetailId = async (tollStationId) => {
   }
 }
 
-// const update = async (tollStationId, reqBody) => {
-//   try {
-//     const updateData = {
-//       ...reqBody,
-//       updatedAt: Date.now()
-//     }
-//     const updatedTollStation = await tollStationModel.update(tollStationId, updateData)
+const update = async (tollStationId) => {
+  try {
+    const updateData = {
+      total_fee: 0,
+      toll_stations: [],
+      updatedAt: Date.now()
+    }
+    const updatedTollStation = await tollHistoryModel.update(tollStationId, updateData)
 
-//     return updatedTollStation
-//   } catch (error) {
-//     throw error
-//   }
-// }
+    return updatedTollStation
+  } catch (error) {
+    throw error
+  }
+}
 
 const deleteHistory = async (tollStationId) => {
   try {
@@ -75,6 +76,6 @@ export const tollHistoryService = {
   //createNew,
   //getDetail,
   getDetailId,
-  //update,
+  update,
   deleteHistory
 }

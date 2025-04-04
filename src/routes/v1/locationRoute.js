@@ -11,10 +11,11 @@ Router.route('/')
     })
   })
 
+//Lấy toàn bộ dữ liệu GPS
 Router.route('/all')
   .get(gpsController.getDetail)
-  .put()
 
+//Lấy gps theo id *Cái này không nên dùng lắm
 Router.route('/:device_id')
   .get(gpsController.getDetailId)
 

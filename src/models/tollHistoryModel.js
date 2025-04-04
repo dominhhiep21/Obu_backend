@@ -18,11 +18,11 @@ const TOLL_HISTORY_COLLECTION_SCHEMA = Joi.object({
     })
   ).default([]),
   createdAt: Joi.date().timestamp('javascript').default(Date.now),
-  //updatedAt: Joi.date().timestamp('javascript').default(null),
+  updatedAt: Joi.date().timestamp('javascript').default(null),
   _destroy: Joi.boolean().default(false)
 })
 
-//const INVALID_UPDATED_FIELDS = ['_id', 'createdAt']
+const INVALID_UPDATED_FIELDS = ['_id', 'createdAt']
 
 // const validateBeforeCreate = async (data) => {
 //   return await TOLL_STATION_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false })
@@ -59,24 +59,24 @@ const findOneById = async (id) => {
 //   }
 // }
 
-// const update = async (tollStationId, reqBody) => {
-//   try {
-//     Object.keys(reqBody).forEach(fieldName => {
-//       if (INVALID_UPDATED_FIELDS.includes(fieldName)) {
-//         delete reqBody[fieldName]
-//       }
-//     })
+const update = async (tollStationId, reqBody) => {
+  try {
+    Object.keys(reqBody).forEach(fieldName => {
+      if (INVALID_UPDATED_FIELDS.includes(fieldName)) {
+        delete reqBody[fieldName]
+      }
+    })
 
-//     const result = await GET_DB().collection(TOLL_STATION_COLLECTION_NAME).findOneAndUpdate(
-//       { _id: new ObjectId(tollStationId) },
-//       { $set: reqBody },
-//       { ReturnDocument: 'after' }
-//     )
-//     return result
-//   } catch (error) {
-//     throw new Error(error)
-//   }
-// }
+    const result = await GET_DB().collection(TOLL_HISTORY_COLLECTION_NAME).findOneAndUpdate(
+      { device_id : tollStationId },
+      { $set: reqBody },
+      { ReturnDocument: 'after' }
+    )
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
 const updateTollFee = async (device_id, lat, lng) => {
   try {
     const db = GET_DB()
@@ -119,16 +119,14 @@ const updateTollFee = async (device_id, lat, lng) => {
       return newHistory
     }
 
-    // Kiểm tra xem đã qua trạm này chưa
     const existingStationIndex = tollHistory.toll_stations.findIndex(station => station._id.toString() === nearestStation._id.toString())
 
     if (existingStationIndex !== -1) {
-      // Nếu đã qua trạm này, cập nhật lastChargedAt và tăng tiền
       const lastChargedTime = tollHistory.toll_stations[existingStationIndex].lastChargedAt
       const timeElapsed = now - lastChargedTime
 
       if (timeElapsed < 5 * 60 * 1000) {
-        return null// Tránh thu phí nhiều lần trong 5 phút
+        return null
       }
 
       const result = await db.collection(TOLL_HISTORY_COLLECTION_NAME).findOneAndUpdate(
@@ -143,7 +141,6 @@ const updateTollFee = async (device_id, lat, lng) => {
       return result
     }
 
-    // Nếu trạm mới, thêm vào danh sách
     const result = await db.collection(TOLL_HISTORY_COLLECTION_NAME).findOneAndUpdate(
       { device_id },
       {
@@ -186,7 +183,7 @@ export const tollHistoryModel = {
   //createNew,
   findOneById,
   //getDetail,
-  //update,
+  update,
   updateTollFee,
   deleteOneById
 }

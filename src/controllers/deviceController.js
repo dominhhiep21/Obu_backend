@@ -28,7 +28,20 @@ const getDetail = async (req, res, next) => {
 const getDetailId = async (req, res, next) => {
   try {
     const deviceId = req.params.device_id
-    const device = await deviceService.getDetailId(deviceId)
+    const startTime = req.query.startTime
+    const endTime = req.query.endTime
+
+    let query = { device_id: deviceId }
+
+    if (startTime && endTime) {
+
+      query.startTime = new Date(`${startTime}T00:00:00Z`).getTime()
+
+      query.endTime = new Date(`${endTime}T23:59:59Z`).getTime()
+    }
+
+
+    const device = await deviceService.getDetailId(query)
 
     res.status(StatusCodes.OK).json({ device })
   } catch (error) {

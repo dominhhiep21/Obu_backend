@@ -14,11 +14,11 @@ Router.route('/')
   .post(tollStationValidation.createNew, tollStationController.createNew)
 
 Router.route('/all')
-  .get(tollStationController.getDetail)
+  .get(tollStationController.getDetail)//Lấy toàn bộ thông tin trạm thu phí
 
 Router.route('/:id')
-  .get(tollStationController.getDetailId)
-  .put(tollStationValidation.update, tollStationController.update)
-  .delete(tollStationValidation.deleteStation, tollStationController.deleteStation)
-  
+  .get(tollStationController.getDetailId)//Lấy thông tin trạm thu phí theo id
+  .put(tollStationValidation.update, tollStationController.update)//Sửa thông tin trạm thu phí
+  .delete(tollStationValidation.deleteStation, tollStationController.deleteStation)//Xóa trạm thu phí
+
 export const tollStationRoute = Router

@@ -36,7 +36,7 @@ const initMQTT = () => {
       )
 
       let route_name = await getStreetName(lat, lng)
-
+      //Data phải có cấu trúc message mqtt có cấu trúc device_id, lat, lon
       const data = { device_id, lat, lng, route_name }
 
       await gpsValidation.createNew(data)

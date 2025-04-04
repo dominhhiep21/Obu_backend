@@ -17,8 +17,9 @@ Router.route('/')
 //   .get(tollHistoryController.getDetail)
 
 Router.route('/:device_id')
-  .get(tollHistoryController.getDetailId)
-  //.put(tollHistoryValidation.update, tollHistoryController.update)
-  .delete(tollHistoryValidation.deleteHistory, tollHistoryController.deleteHistory)
+  .get(tollHistoryController.getDetailId)//Lấy lịch sử thu phí theo device_id nếu nhập mỗi device_id thì lấy toàn bộ data, 
+  // nếu thêm startTime và endTime ở req.query thì truy vấn theo ngày
+  .put(tollHistoryController.update)//Reset phí và lịch sử thu phí thành 0
+  .delete(tollHistoryValidation.deleteHistory, tollHistoryController.deleteHistory)//Xóa lịch sử giao dịch
 
 export const tollHistoryRoute = Router

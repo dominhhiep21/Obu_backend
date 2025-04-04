@@ -53,49 +53,74 @@ const findOneById = async (id) => {
   }
 }
 
-const findOneByDeviceId = async (id) => {
+const findOneByDeviceId = async (query) => {
   try {
-    const result = await GET_DB().collection(DEVICE_COLLECTION_NAME).aggregate([
-      {
-        $match: {
-          device_id: `${id}`,
-          _destroy: false
-        }
-      },
-      {
-        $lookup: {
-          from: gpsModel.GPS_COLLECTION_NAME,
-          localField: 'device_id',
-          foreignField: 'device_id',
-          as: 'route_info'
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          device_id: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          route_info: {
-            $map: {
-              input: '$route_info',
-              as: 'route',
-              in: {
-                lat: '$$route.lat',
-                lng: '$$route.lng',
-                route_name: '$$route.route_name',
-                createdAt: '$$route.createdAt'
+    const matchStage = {
+      $match: {
+        device_id: query.device_id,
+        _destroy: false
+      }
+    }
+
+    const lookupStage = {
+      $lookup: {
+        from: gpsModel.GPS_COLLECTION_NAME,
+        let: { deviceId: '$device_id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ['$device_id', '$$deviceId']
               }
+            }
+          },
+          ...(query.startTime && query.endTime
+            ? [{
+              $match: {
+                createdAt: {
+                  $gte: query.startTime,
+                  $lt: query.endTime
+                }
+              }
+            }]
+            : [])
+        ],
+        as: 'route_info'
+      }
+    }
+
+    const projectStage = {
+      $project: {
+        _id: 0,
+        device_id: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        route_info: {
+          $map: {
+            input: '$route_info',
+            as: 'route',
+            in: {
+              lat: '$$route.lat',
+              lng: '$$route.lng',
+              route_name: '$$route.route_name',
+              createdAt: '$$route.createdAt'
             }
           }
         }
       }
-    ]).toArray()
-    return result
+    }
+
+    const result = await GET_DB()
+      .collection(DEVICE_COLLECTION_NAME)
+      .aggregate([matchStage, lookupStage, projectStage])
+      .toArray()
+
+    return result[0] || null
   } catch (error) {
     throw new Error(error)
   }
-}
+};
+
 
 const getDetail = async () => {
   try {
