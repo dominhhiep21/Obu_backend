@@ -35,11 +35,15 @@ const getDetailId = async (req, res, next) => {
 
     if (startTime && endTime) {
 
-      query.startTime = new Date(`${startTime}T00:00:00Z`).getTime()
+      query.startTime = new Date(`${startTime.trim()}T00:00:00Z`).getTime()
+      query.endTime = new Date(`${endTime.trim()}T23:59:59.999Z`).getTime()
 
-      query.endTime = new Date(`${endTime}T23:59:59Z`).getTime()
+      console.log(startTime)
+      console.log(endTime)
+      console.log(query.startTime)
+      console.log(query.endTime)
+
     }
-
 
     const device = await deviceService.getDetailId(query)
 
