@@ -54,7 +54,9 @@ const findOneById = async (id) => {
 }
 
 const findOneByDeviceId = async (query) => {
+
   try {
+
     const matchStage = {
       $match: {
         device_id: query.device_id,
@@ -119,7 +121,7 @@ const findOneByDeviceId = async (query) => {
   } catch (error) {
     throw new Error(error)
   }
-};
+}
 
 
 const getDetail = async () => {

@@ -16,6 +16,7 @@ Router.route('/')
 Router.route('/all')
   .get(deviceController.getDetail)//Lấy toàn bộ thiết bị
 
+// http://localhost:8017/v1/device/gps_device?startTime=2025-04-03&endTime=2025-04-05
 Router.route('/:device_id')
   .get(deviceController.getDetailId)//Lấy thông tin thiết bị theo id
   .put(deviceValidation.update, deviceController.update)//Sửa đổi thông tin thiết bị
