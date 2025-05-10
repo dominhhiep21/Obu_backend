@@ -104,6 +104,7 @@ const findOneByDeviceId = async (query) => {
             in: {
               lat: '$$route.lat',
               lng: '$$route.lng',
+              alt: '$$route.alt',
               route_name: '$$route.route_name',
               createdAt: '$$route.createdAt'
             }

@@ -15,8 +15,8 @@ Router.route('/')
 Router.route('/all')
   .get(gpsController.getDetail)
 
-//Lấy gps theo id *Cái này không nên dùng lắm
-Router.route('/:device_id')
-  .get(gpsController.getDetailId)
+// //Lấy gps theo id *Cái này không nên dùng lắm
+// Router.route('/:device_id')
+//   .get(gpsController.getDetailId)
 
 export const locationRoute = Router

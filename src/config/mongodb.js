@@ -6,13 +6,16 @@ const DATABASE_NAME = env.DATABASE_NAME
 
 let databaseInstance = null
 
-const mongoClientInstance = new MongoClient(MONGODB_URI, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true
-  }
-})
+// const mongoClientInstance = new MongoClient(MONGODB_URI, //{
+// //   serverApi: {
+//     // version: ServerApiVersion.v1,
+//     // strict: true,
+//     // deprecationErrors: true
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true
+//   //}
+// })
+const mongoClientInstance = new MongoClient(MONGODB_URI)
 
 export const CONNECT_DB = async () => {
   await mongoClientInstance.connect()

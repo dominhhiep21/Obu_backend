@@ -4,6 +4,7 @@ import { gpsModel } from '~/models/gpsModel.js'
 import { env } from '~/config/environment'
 import { getStreetName } from '~/utils/getRouteName'
 import { tollHistoryModel } from '~/models/tollHistoryModel'
+import { getIO } from '~/utils/constants'
 
 const MQTT_BROKER_URL = env.MQTT_BROKER
 const TOPIC = env.MQTT_TOPIC
@@ -31,17 +32,26 @@ const initMQTT = () => {
 
   client.on('message', async (topic, message) => {
     try {
-      let [device_id, lat, lng] = message.toString().split(',').map((val, index) =>
+      let [device_id, lat, lng, alt] = message.toString().split(',').map((val, index) =>
         index === 0 ? val.trim() : parseFloat(val.trim())
       )
 
       let route_name = await getStreetName(lat, lng)
       //Data phải có cấu trúc message mqtt có cấu trúc device_id, lat, lon
-      const data = { device_id, lat, lng, route_name }
+      const data = { device_id, lat, lng, alt, route_name }
+      const _io = getIO()
 
-      await gpsValidation.createNew(data)
-      await gpsModel.createNew(data)
-      await tollHistoryModel.updateTollFee(device_id, lat, lng)
+      if (Math.abs(data.lat) != 0 && Math.abs(data.lng) != 0 && Math.abs(data.alt) != 0) {
+        await gpsValidation.createNew(data)
+        await gpsModel.createNew(data)
+        await tollHistoryModel.updateTollFee(device_id, lat, lng)
+      }
+      const msg = message.toString()
+
+      if (_io) {
+        _io.emit('location message', msg)
+      }
+
     } catch (error) {
       console.error('Error processing MQTT message:', error)
     }

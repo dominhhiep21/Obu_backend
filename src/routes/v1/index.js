@@ -9,7 +9,7 @@ const Router = express.Router()
 
 Router.get('/status', (req, res) => {
   res.status(StatusCodes.OK).json({
-    message : 'API v1 init successfully'
+    message: 'API v1 init successfully'
   })
 })
 

@@ -18,21 +18,21 @@ const getDetail = async () => {
   }
 }
 
-const getDetailId = async (device_id) => {
-  try {
-    const device = await gpsModel.getDetailId(device_id)
+// const getDetailId = async (device_id) => {
+//   try {
+//     const device = await gpsModel.getDetailId(device_id)
 
-    if (!device) {
-      throw new ApiError(StatusCodes.NOT_FOUND, 'Device detail with this id not found')
-    }
+//     if (!device) {
+//       throw new ApiError(StatusCodes.NOT_FOUND, 'Device detail with this id not found')
+//     }
 
-    return device
-  } catch (error) {
-    throw error
-  }
-}
+//     return device
+//   } catch (error) {
+//     throw error
+//   }
+// }
 
 export const gpsService = {
-  getDetail,
-  getDetailId
+  getDetail
+  //getDetailId
 }

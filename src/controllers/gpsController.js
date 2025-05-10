@@ -11,18 +11,19 @@ const getDetail = async (req, res, next) => {
   }
 }
 
-const getDetailId = async (req, res, next) => {
-  try {
-    const deviceId = req.params.device_id
+// const getDetailId = async (req, res, next) => {
+//   try {
+//     const deviceId = req.params.device_id
 
-    const device = await gpsService.getDetailId(deviceId)
+//     const device = await gpsService.getDetailId(deviceId)
 
-    res.status(StatusCodes.OK).json({ device })
-  } catch (error) {
-    next(error)
-  }
-}
+//     res.status(StatusCodes.OK).json({ device })
+//   } catch (error) {
+//     next(error)
+//   }
+// }
+
 export const gpsController = {
-  getDetail,
-  getDetailId
+  getDetail
+  //getDetailId
 }
