@@ -4,6 +4,7 @@ import { locationRoute } from './locationRoute'
 import { tollStationRoute } from './tollStationRoute'
 import { deviceRoute } from './deviceRoute'
 import { tollHistoryRoute } from './tollHistoryRoute'
+import { authRoute } from './authRoute'
 
 const Router = express.Router()
 
@@ -20,5 +21,7 @@ Router.use('/tollstation', tollStationRoute)
 Router.use('/device', deviceRoute)
 
 Router.use('/tollhistory', tollHistoryRoute)
+
+Router.use('/auth', authRoute)
 
 export const API_V1 = Router
