@@ -15,7 +15,7 @@ const AUTH_COLLECTION_SCHEMA = Joi.object({
   _destroy: Joi.boolean().default(false)
 })
 
-//const INVALID_UPDATED_FIELDS = ['_id', 'createdAt']
+const INVALID_UPDATED_FIELDS = ['_id', 'createdAt']
 
 const validateBeforeCreate = async (data) => {
   return await AUTH_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false })
@@ -44,7 +44,7 @@ const findOneById = async (id) => {
   try {
     const result = await GET_DB().collection(AUTH_COLLECTION_NAME).findOne(
       { _id: new ObjectId(id) },
-      { projection: { _id: 0, _destroy: 0 } }
+      { projection: { _destroy: 0 } }
     )
     return result
   } catch (error) {
@@ -56,7 +56,7 @@ const findOneByName = async (name) => {
   try {
     const result = await GET_DB().collection(AUTH_COLLECTION_NAME).findOne(
       { username: name },
-      { projection: { _id: 0, _destroy: 0 } }
+      { projection: { destroy: 0 } }
     )
     return result
   } catch (error) {
@@ -106,6 +106,7 @@ const findOneByName = async (name) => {
 export const authModel = {
   AUTH_COLLECTION_NAME,
   AUTH_COLLECTION_SCHEMA,
+  INVALID_UPDATED_FIELDS,
   createNew,
   findOneById,
   findOneByName

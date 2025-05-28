@@ -1,5 +1,6 @@
 import express from 'express'
-import { authController, registerController } from '~/controllers/authController'
+import { authController } from '~/controllers/authController'
+import { authHandlingMiddleware } from '~/middlewares/authHandlingMiddleware'
 import { authValidation } from '~/validations/authValidation'
 
 const Router = express.Router()
@@ -9,4 +10,11 @@ Router.route('/register')
 
 Router.route('/login')
   .post(authValidation.loginUser, authController.loginUser)
+
+Router.route('/refresh')
+  .post(authController.requestRefreshToken)
+
+Router.route('/logout')
+  .post(authHandlingMiddleware.authMiddleware, authController.logOutUser)
+
 export const authRoute = Router

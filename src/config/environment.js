@@ -7,5 +7,7 @@ export const env = {
   LOCAL_DEV_APP_PORT : process.env.LOCAL_DEV_APP_PORT,
   BUILD_MODE : process.env.BUILD_MODE,
   MQTT_BROKER : process.env.MQTT_BROKER,
-  MQTT_TOPIC : process.env.MQTT_TOPIC
+  MQTT_TOPIC : process.env.MQTT_TOPIC,
+  JWT_ACCESS_KEY : process.env.JWT_ACCESS_KEY,
+  JWT_REFRESH_KEY : process.env.JWT_REFRESH_KEY
 }

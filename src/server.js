@@ -8,6 +8,7 @@ import { mqttClient } from '~/mqtt/mqttClient'
 import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware'
 import { corsOptions } from './config/cors'
 import { initSocketIO } from './utils/constants'
+import cookieParser from 'cookie-parser'
 import exampleSocket from './sockets/exampleSocket'
 import http from 'http'
 
@@ -24,6 +25,7 @@ const START_SERVER = () => {
 
   // Middleware & API
   app.use(express.json())
+  app.use(cookieParser())
   app.use(cors(corsOptions))
   app.use('/v1', API_V1)
   app.use(errorHandlingMiddleware)
