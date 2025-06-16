@@ -13,7 +13,6 @@ const createNew = async (req, res, next) => {
 
   try {
     await validateFormat.validateAsync(req.body, { abortEarly: false })
-
     next()
   } catch (error) {
     next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message))

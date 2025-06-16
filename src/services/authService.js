@@ -12,7 +12,6 @@ const createNew = async (reqBody) => {
     const newAuth = {
       ...reqBody
     }
-
     const createdAuth = await authModel.createNew(newAuth)
     if (createdAuth == null) return { CreateResult: 'This user already exists' }
     const searchedAuth = await authModel.findOneById(createdAuth.insertedId)

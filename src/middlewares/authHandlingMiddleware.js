@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import { env } from '~/config/environment'
 
 const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers.authorization
+  const authHeader = req.headers.token
 
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.split(' ')[1]

@@ -7,7 +7,6 @@ import jwt from 'jsonwebtoken'
 const createNew = async (req, res, next) => {
   try {
     const createdAuth = await authService.createNew(req.body)
-
     res.status(StatusCodes.CREATED).json({
       createdAuth
     })
@@ -20,6 +19,7 @@ const createNew = async (req, res, next) => {
 const loginUser = async (req, res, next) => {
   try {
     const result = await authService.loginUser(req.body)
+    result.data.accToken = result.accToken
 
     if (!result.success) {
       return res.status(StatusCodes.UNAUTHORIZED).json({
@@ -34,8 +34,7 @@ const loginUser = async (req, res, next) => {
     })
 
     res.status(StatusCodes.OK).json({
-      user: result.data,
-      accToken: result.accToken
+      user: result.data
     })
   } catch (error) {
     next(error)
