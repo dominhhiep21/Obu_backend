@@ -1,6 +1,8 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
+import { authController } from '~/controllers/authController'
 import { gpsController } from '~/controllers/gpsController'
+import { authHandlingMiddleware } from '~/middlewares/authHandlingMiddleware'
 
 const Router = express.Router()
 
@@ -13,7 +15,7 @@ Router.route('/')
 
 //Lấy toàn bộ dữ liệu GPS
 Router.route('/all')
-  .get(gpsController.getDetail)
+  .get(authHandlingMiddleware.verifyAuthAndAdminRole, gpsController.getDetail)
 
 // //Lấy gps theo id *Cái này không nên dùng lắm
 // Router.route('/:device_id')

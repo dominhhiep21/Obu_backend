@@ -2,6 +2,7 @@ import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { tollStationValidation } from '~/validations/tollStationValidation'
 import { tollStationController } from '~/controllers/tollStationController'
+import { authHandlingMiddleware } from '~/middlewares/authHandlingMiddleware'
 
 const Router = express.Router()
 
@@ -11,14 +12,18 @@ Router.route('/')
       message : 'API get list toll station'
     })
   })
-  .post(tollStationValidation.createNew, tollStationController.createNew)
+  .post(
+    authHandlingMiddleware.verifyAuthAndAdminRole,
+    tollStationValidation.createNew,
+    tollStationController.createNew
+  )
 
 Router.route('/all')
-  .get(tollStationController.getDetail)//Lấy toàn bộ thông tin trạm thu phí
+  .get(authHandlingMiddleware.authMiddleware, tollStationController.getDetail)
 
 Router.route('/:id')
-  .get(tollStationController.getDetailId)//Lấy thông tin trạm thu phí theo id
-  .put(tollStationValidation.update, tollStationController.update)//Sửa thông tin trạm thu phí
-  .delete(tollStationValidation.deleteStation, tollStationController.deleteStation)//Xóa trạm thu phí
+  .get(authHandlingMiddleware.authMiddleware, tollStationController.getDetailId)
+  .put(authHandlingMiddleware.verifyAuthAndAdminRole, tollStationValidation.update, tollStationController.update)
+  .delete(authHandlingMiddleware.verifyAuthAndAdminRole, tollStationValidation.deleteStation, tollStationController.deleteStation)
 
 export const tollStationRoute = Router

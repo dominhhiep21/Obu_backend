@@ -10,7 +10,7 @@ const createNew = async (reqBody) => {
     }
 
     const createdDevice = await deviceModel.createNew(newDevice)
-    if (createdDevice == null) return { CreateResult : 'This device already exists' }
+    if (createdDevice == null) return { CreateResult: 'This device already exists' }
     const searchedDevice = await deviceModel.findOneById(createdDevice.insertedId)
     return searchedDevice
   } catch (error) {
@@ -65,7 +65,19 @@ const deleteDevice = async (deviceId) => {
   try {
     await deviceModel.deleteOneById(deviceId)
 
-    return { deleteResult : 'This device was deleted successfully' }
+    return { deleteResult: 'This device was deleted successfully' }
+  } catch (error) {
+    throw error
+  }
+}
+
+const getDetailViaUserId = async (userId) => {
+  try {
+    const device = await deviceModel.findAllByUserId(userId)
+    if (device != null) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Device detail not found')
+    }
+    return device
   } catch (error) {
     throw error
   }
@@ -76,5 +88,6 @@ export const deviceService = {
   getDetail,
   getDetailId,
   update,
-  deleteDevice
+  deleteDevice,
+  getDetailViaUserId
 }

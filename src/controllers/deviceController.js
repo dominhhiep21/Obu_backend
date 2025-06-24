@@ -1,9 +1,15 @@
 import { StatusCodes } from 'http-status-codes'
 import { deviceService } from '~/services/deviceService'
+import { ObjectId } from 'mongodb'
 
 const createNew = async (req, res, next) => {
   try {
-    const createdDevice = await deviceService.createNew(req.body)
+    const dataWithOwner = {
+      ...req.body,
+      ownerId: req.user.id
+    }
+    //console.log(req.user)
+    const createdDevice = await deviceService.createNew(dataWithOwner)
 
     res.status(StatusCodes.CREATED).json({
       createdDevice
@@ -20,6 +26,19 @@ const getDetail = async (req, res, next) => {
     const device = await deviceService.getDetail()
 
     res.status(StatusCodes.OK).json({ device })
+  } catch (error) {
+    next(error)
+  }
+}
+
+const getDeviceViaUserId = async(req, res, next) => {
+  try {
+    const userId = req.params.userId
+
+    const device = await deviceService.getDetailViaUserId(userId)
+
+    res.status(StatusCodes.OK).json({ device })
+
   } catch (error) {
     next(error)
   }
@@ -80,5 +99,6 @@ export const deviceController = {
   getDetail,
   getDetailId,
   update,
-  deleteDevice
+  deleteDevice,
+  getDeviceViaUserId
 }

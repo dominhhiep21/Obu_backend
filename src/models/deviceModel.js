@@ -3,12 +3,14 @@ import { ObjectId } from 'mongodb'
 import { GET_DB } from '~/config/mongodb'
 import { gpsModel } from './gpsModel'
 import { tollHistoryModel } from './tollHistoryModel'
+import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators'
 const DEVICE_COLLECTION_NAME = 'devices'
 
 const DEVICE_COLLECTION_SCHEMA = Joi.object({
   device_id: Joi.string().required().trim().strict(),
   createdAt: Joi.date().timestamp('javascript').default(Date.now),
   updatedAt: Joi.date().timestamp('javascript').default(null),
+  ownerId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
   _destroy: Joi.boolean().default(false)
 })
 
@@ -25,6 +27,7 @@ const createNew = async (data) => {
       { device_id: data.device_id }
     )
     if (!result) {
+      validData.ownerId = new ObjectId(validData.ownerId)
       const createdDevice = await GET_DB().collection(DEVICE_COLLECTION_NAME).insertOne(validData)
 
       const tollHistoryData = {
@@ -41,11 +44,23 @@ const createNew = async (data) => {
   }
 }
 
+const findAllByUserId = async (userId) => {
+  try {
+    const device = await GET_DB().collection(DEVICE_COLLECTION_NAME).find(
+      { ownerId: new ObjectId(userId) },
+      { projection: { _destroy: 0 } }
+    )
+    return device
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 const findOneById = async (id) => {
   try {
     const result = await GET_DB().collection(DEVICE_COLLECTION_NAME).findOne(
       { _id: new ObjectId(id) },
-      { projection: { _id: 0, _destroy: 0 } }
+      { projection: { _destroy: 0 } }
     )
     return result
   } catch (error) {
@@ -181,5 +196,6 @@ export const deviceModel = {
   getDetail,
   update,
   deleteOneById,
-  findOneByDeviceId
+  findOneByDeviceId,
+  findAllByUserId
 }
